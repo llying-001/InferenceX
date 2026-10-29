@@ -24,7 +24,7 @@ behind them.
 
 Physical host count does not determine scope: both GB topologies stay inside one 72-GPU MNNVL
 scale-up domain. `configs/platform_config.json` registers which backend runs where. `normal` mode
-runs the decode and prefill ladders; `low-latency` is decode-only.
+runs the decode and prefill ladders; `low-latency` runs decode, plus prefill for NCCL EP.
 
 | Backend | Engine selector (`maturity`) | `normal` | `low-latency` |
 |---|---|---|---|
@@ -35,9 +35,9 @@ runs the decode and prefill ladders; `low-latency` is decode-only.
 | `flashinfer-ep` | vLLM `--all2all-backend flashinfer_nvlink_one_sided` (`production`) | EP8: H100, H200. EP8, EP16: GB200, GB300 | none |
 
 Every backend runs a BF16 dispatch control and an FP8 dispatch; nccl-ep's FP8 is its internal
-DS_FP8E3M4 recipe, low-latency decode only. Combine is always BF16. Coverage is uniform routing only.
+DS_FP8E3M4 recipe, low-latency prefill and decode. Combine is always BF16. Coverage is uniform routing only.
 
-`results/cases.json` is the committed copy of the full matrix: 250 requested cases, of which 226 are
+`results/cases.json` is the committed copy of the full matrix: 272 requested cases, of which 248 are
 runnable EP cases, 18 are swap-blocks cases (two per pool) and 6 are unsupported EP cells (UCCL-EP
 EP16 on MI355X and FlashInfer EP16 on H100 and H200, once per phase; FlashInfer's MNNVL workspace
 needs every rank inside one NVLink domain).
